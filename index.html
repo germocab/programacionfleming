@@ -3,115 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territory Planner - Germán</title>
+    <title>Territory Pro - Germán</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
         :root {
-            --bg-gradient: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
-            --accent-blue: #3b82f6;
-            --success-green: #10b981;
-            --glass-bg: rgba(255, 255, 255, 0.7);
+            --bg-main: #f0f2f5;
+            --accent: #007aff;
+            --glass: rgba(255, 255, 255, 0.7);
+            --card-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
         }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-gradient);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
+            color: #1d1d1f;
         }
 
         #capture-area {
-            padding: 50px;
-            background: var(--bg-gradient);
-            border-radius: 40px;
+            padding: 60px;
+            background: var(--bg-main);
         }
 
         .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 40px;
-            width: 900px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 50px;
+            width: 1000px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255,255,255,0.4);
         }
 
-        h1 { font-weight: 700; font-size: 2.2rem; margin: 0 0 10px 0; }
-        .subtitle { color: #64748b; margin-bottom: 40px; font-size: 1.1rem; }
+        header { margin-bottom: 40px; }
+        h1 { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .subtitle { color: #86868b; font-size: 1.1rem; margin-top: 5px; }
 
         .week-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* 6 días activos */
-            gap: 15px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
         }
 
         .day-column {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .card {
             background: white;
-            aspect-ratio: 1 / 1; /* Esto fuerza a que sean cuadrados */
-            border-radius: 20px;
+            aspect-ratio: 1 / 1;
+            border-radius: 28px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 15px;
+            box-sizing: border-box;
             position: relative;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #f2f2f7;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .day-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #1e293b; }
-        .date-label { font-size: 0.7rem; color: #94a3b8; margin-bottom: 8px; }
+        .day-info { margin-bottom: 10px; }
+        .day-name { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #1d1d1f; opacity: 0.8; }
+        .day-date { font-size: 0.75rem; color: #86868b; }
 
-        .territory-num {
-            font-size: 2.2rem;
+        /* Contenedor de territorios dentro del cuadro */
+        .territory-list {
+            flex-grow: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-content: center;
+            justify-content: center;
+        }
+
+        /* Diseño del Número (El cambio visual solicitado) */
+        .t-badge {
+            background: linear-gradient(135deg, #007aff, #0051af);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 800;
-            color: var(--success-green);
-            line-height: 1;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+            cursor: pointer;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .btn-add {
-            width: 44px;
-            height: 44px;
-            background: var(--accent-blue);
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: #f2f2f7;
+            border: none;
+            border-radius: 10px;
+            color: #007aff;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-add:hover { background: #e5e5ea; }
+
+        .actions { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
+        
+        #btn-export {
+            background: #1d1d1f;
             color: white;
             border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .btn-add:hover { transform: scale(1.1); }
-
-        .share-row {
-            margin-top: 30px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        #btn-share {
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            cursor: pointer;
+            padding: 14px 28px;
+            border-radius: 16px;
             font-weight: 600;
-            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* Modal simple */
+        #btn-export:hover { background: #000; transform: translateY(-2px); }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -120,52 +158,55 @@
         .modal-content {
             background: white;
             padding: 30px;
-            border-radius: 24px;
-            width: 320px;
-            text-align: center;
+            border-radius: 30px;
+            width: 340px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
 
         .num-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            max-height: 300px;
-            overflow-y: auto;
+            gap: 10px;
             margin: 20px 0;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
-        .num-item {
-            padding: 10px;
-            background: #f1f5f9;
-            border-radius: 8px;
+        .num-btn {
+            padding: 12px;
+            border: 1px solid #f2f2f7;
+            border-radius: 12px;
+            background: #f9f9fb;
             cursor: pointer;
             font-weight: 600;
         }
 
-        .num-item.active { background: var(--accent-blue); color: white; }
+        .num-btn:hover { background: #007aff; color: white; }
     </style>
 </head>
 <body>
 
 <div id="capture-area">
     <div class="container">
-        <h1>Hola Germán</h1>
-        <div class="subtitle">Para la semana del 2 de Marzo al 8 de Marzo de 2026</div>
+        <header>
+            <h1>Hola Germán</h1>
+            <div class="subtitle" id="week-label">Cargando semana...</div>
+        </header>
 
-        <div class="week-grid" id="main-grid">
-            </div>
+        <div class="week-grid" id="main-grid"></div>
 
-        <div class="share-row">
-            <button id="btn-share">📤 Compartir programación</button>
+        <div class="actions">
+            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600;">Reiniciar semana</button>
+            <button id="btn-export">📤 Compartir imagen</button>
         </div>
     </div>
 </div>
 
 <div id="modal" class="modal">
     <div class="modal-content">
-        <h3>Asignar Territorio</h3>
+        <h3 style="margin-top:0">Asignar Territorio</h3>
         <div class="num-grid" id="num-grid"></div>
-        <button onclick="saveAssignment()" style="width:100%; padding:12px; border-radius:10px; border:none; background:var(--accent-blue); color:white; font-weight:600; cursor:pointer;">Confirmar</button>
+        <button onclick="closeModal()" style="width:100%; padding:12px; border:none; border-radius:15px; background:#f2f2f7; cursor:pointer; font-weight:600;">Cancelar</button>
     </div>
 </div>
 
@@ -179,34 +220,37 @@
         { name: 'Domingo', date: '8 Mar', shifts: 1 }
     ];
 
-    let currentTargetId = null;
-    let selectedNum = null;
+    let activeSlotId = null;
+    let data = JSON.parse(localStorage.getItem('territoryData')) || {};
 
     function render() {
         const grid = document.getElementById('main-grid');
         grid.innerHTML = '';
-        
+        document.getElementById('week-label').innerText = "Para la semana del 2 de Marzo al 8 de Marzo de 2026";
+
         days.forEach((day, dIdx) => {
             const col = document.createElement('div');
             col.className = 'day-column';
             
             for(let s = 0; s < day.shifts; s++) {
                 const id = `slot-${dIdx}-${s}`;
-                const val = localStorage.getItem(id) || '--';
+                const territories = data[id] || [];
                 
                 const card = document.createElement('div');
                 card.className = 'card';
+                
+                let tHtml = territories.map((num, i) => 
+                    `<div class="t-badge" onclick="removeT('${id}', ${i}, event)">${num}</div>`
+                ).join('');
+
                 card.innerHTML = `
-                    <div class="day-label">${day.name}</div>
-                    <div class="date-label">${day.date}</div>
-                    <div class="territory-num" id="text-${id}">${val}</div>
-                    ${val === '--' ? `<button class="btn-add" onclick="openModal('${id}')">+</button>` : ''}
+                    <div class="day-info">
+                        <div class="day-name">${day.name}</div>
+                        <div class="day-date">${day.date}</div>
+                    </div>
+                    <div class="territory-list">${tHtml}</div>
+                    <button class="btn-add" onclick="openModal('${id}')">+</button>
                 `;
-                // Si ya tiene valor, permitir resetear al hacer click en el número
-                if(val !== '--') {
-                    card.onclick = () => openModal(id);
-                    card.style.cursor = 'pointer';
-                }
                 col.appendChild(card);
             }
             grid.appendChild(col);
@@ -214,45 +258,66 @@
     }
 
     function openModal(id) {
-        currentTargetId = id;
+        activeSlotId = id;
         document.getElementById('modal').style.display = 'flex';
         const numGrid = document.getElementById('num-grid');
         numGrid.innerHTML = '';
         for(let i=1; i<=36; i++) {
-            const n = document.createElement('div');
-            n.className = 'num-item';
-            n.innerText = i;
-            n.onclick = () => {
-                selectedNum = i;
-                document.querySelectorAll('.num-item').forEach(el => el.classList.remove('active'));
-                n.classList.add('active');
-            };
-            numGrid.appendChild(n);
+            const b = document.createElement('button');
+            b.className = 'num-btn';
+            b.innerText = i;
+            b.onclick = () => selectNum(i);
+            numGrid.appendChild(b);
         }
     }
 
-    function saveAssignment() {
-        if(selectedNum) {
-            localStorage.setItem(currentTargetId, selectedNum);
-            document.getElementById('modal').style.display = 'none';
-            selectedNum = null;
-            render();
+    function selectNum(num) {
+        if(!data[activeSlotId]) data[activeSlotId] = [];
+        data[activeSlotId].push(num);
+        saveAndRefresh();
+        closeModal();
+    }
+
+    function removeT(id, index, e) {
+        e.stopPropagation();
+        data[id].splice(index, 1);
+        saveAndRefresh();
+    }
+
+    function saveAndRefresh() {
+        localStorage.setItem('territoryData', JSON.stringify(data));
+        render();
+    }
+
+    function closeModal() { document.getElementById('modal').style.display = 'none'; }
+    
+    function clearData() {
+        if(confirm('¿Reiniciar toda la semana?')) {
+            data = {};
+            saveAndRefresh();
         }
     }
 
-    document.getElementById('btn-share').onclick = () => {
-        const btn = document.getElementById('btn-share');
-        btn.style.display = 'none'; // Ocultar para la foto
+    document.getElementById('btn-export').onclick = () => {
+        const btnRow = document.querySelector('.actions');
+        const addBtns = document.querySelectorAll('.btn-add');
         
+        // Esconder UI de edición para la foto
+        btnRow.style.opacity = '0';
+        addBtns.forEach(b => b.style.opacity = '0');
+
         html2canvas(document.querySelector("#capture-area"), {
-            scale: 2,
-            backgroundColor: null
+            scale: 3,
+            backgroundColor: "#f0f2f5",
+            borderRadius: 40
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'territorios-semana.png';
-            link.href = canvas.toDataURL();
+            link.download = 'Programacion-Semanal.png';
+            link.href = canvas.toDataURL('image/png');
             link.click();
-            btn.style.display = 'block';
+            
+            btnRow.style.opacity = '1';
+            addBtns.forEach(b => b.style.opacity = '1');
         });
     };
 
