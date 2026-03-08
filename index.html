@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territory Pro - Germán</title>
+    <title>Territory Pro - Dinámico</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
@@ -26,10 +26,7 @@
             color: #1d1d1f;
         }
 
-        #capture-area {
-            padding: 60px;
-            background: var(--bg-main);
-        }
+        #capture-area { padding: 60px; background: var(--bg-main); }
 
         .container {
             background: var(--glass);
@@ -42,21 +39,24 @@
             border: 1px solid rgba(255,255,255,0.4);
         }
 
-        header { margin-bottom: 40px; }
+        header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-start; }
         h1 { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .subtitle { color: #86868b; font-size: 1.1rem; margin-top: 5px; }
+        .subtitle { color: #86868b; font-size: 1.1rem; margin-top: 5px; font-weight: 600; }
 
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-        }
-
-        .day-column {
+        .date-picker-container {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #e5e5ea;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 5px;
         }
+        .date-picker-container label { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        input[type="date"] { border: none; font-family: inherit; font-weight: 600; outline: none; color: #1d1d1f; cursor: pointer; }
+
+        .week-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+        .day-column { display: flex; flex-direction: column; gap: 20px; }
 
         .card {
             background: white;
@@ -69,118 +69,55 @@
             position: relative;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border: 1px solid #f2f2f7;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .day-info { margin-bottom: 10px; }
-        .day-name { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #1d1d1f; opacity: 0.8; }
-        .day-date { font-size: 0.75rem; color: #86868b; }
+        .day-name { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #1d1d1f; }
+        .day-date { font-size: 0.75rem; color: #86868b; font-weight: 600; }
 
-        /* Contenedor de territorios dentro del cuadro */
-        .territory-list {
-            flex-grow: 1;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            align-content: center;
-            justify-content: center;
-        }
+        .territory-list { flex-grow: 1; display: flex; flex-wrap: wrap; gap: 6px; align-content: center; justify-content: center; }
 
-        /* Diseño del Número (El cambio visual solicitado) */
         .t-badge {
             background: linear-gradient(135deg, #007aff, #0051af);
             color: white;
-            width: 42px;
-            height: 42px;
+            width: 42px; height: 42px;
             border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.2rem;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 1.2rem;
             box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
             cursor: pointer;
             animation: popIn 0.3s ease-out;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         .btn-add {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            width: 32px;
-            height: 32px;
-            background: #f2f2f7;
-            border: none;
-            border-radius: 10px;
-            color: #007aff;
-            font-size: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; bottom: 15px; right: 15px;
+            width: 32px; height: 32px;
+            background: #f2f2f7; border: none; border-radius: 10px;
+            color: #007aff; font-size: 20px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .btn-add:hover { background: #e5e5ea; }
 
         .actions { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
         
         #btn-export {
-            background: #1d1d1f;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            background: #1d1d1f; color: white; border: none;
+            padding: 14px 28px; border-radius: 16px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
         }
 
         #btn-export:hover { background: #000; transform: translateY(-2px); }
 
-        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+            align-items: center; justify-content: center; z-index: 1000;
         }
 
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            width: 340px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .num-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px 0;
-            max-height: 250px;
-            overflow-y: auto;
-        }
-
-        .num-btn {
-            padding: 12px;
-            border: 1px solid #f2f2f7;
-            border-radius: 12px;
-            background: #f9f9fb;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
+        .modal-content { background: white; padding: 30px; border-radius: 30px; width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; max-height: 250px; overflow-y: auto; }
+        .num-btn { padding: 12px; border: 1px solid #f2f2f7; border-radius: 12px; background: #f9f9fb; cursor: pointer; font-weight: 600; }
         .num-btn:hover { background: #007aff; color: white; }
     </style>
 </head>
@@ -189,14 +126,20 @@
 <div id="capture-area">
     <div class="container">
         <header>
-            <h1>Hola Germán</h1>
-            <div class="subtitle" id="week-label">Cargando semana...</div>
+            <div>
+                <h1>Hola Germán</h1>
+                <div class="subtitle" id="week-range-text">Selecciona una fecha</div>
+            </div>
+            <div class="date-picker-container" id="picker-ui">
+                <label>Lunes de la semana</label>
+                <input type="date" id="monday-picker" onchange="updateWeek()">
+            </div>
         </header>
 
         <div class="week-grid" id="main-grid"></div>
 
         <div class="actions">
-            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600;">Reiniciar semana</button>
+            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600;">Reiniciar territorios</button>
             <button id="btn-export">📤 Compartir imagen</button>
         </div>
     </div>
@@ -211,30 +154,66 @@
 </div>
 
 <script>
-    const days = [
-        { name: 'Lunes', date: '2 Mar', shifts: 1 },
-        { name: 'Martes', date: '3 Mar', shifts: 1 },
-        { name: 'Miércoles', date: '4 Mar', shifts: 2 },
-        { name: 'Jueves', date: '5 Mar', shifts: 1 },
-        { name: 'Viernes', date: '6 Mar', shifts: 2 },
-        { name: 'Domingo', date: '8 Mar', shifts: 1 }
+    // Estructura fija de días y sus turnos
+    const weekStructure = [
+        { name: 'Lunes', offset: 0, shifts: 1 },
+        { name: 'Martes', offset: 1, shifts: 1 },
+        { name: 'Miércoles', offset: 2, shifts: 2 },
+        { name: 'Jueves', offset: 3, shifts: 1 },
+        { name: 'Viernes', offset: 4, shifts: 2 },
+        { name: 'Domingo', offset: 6, shifts: 1 }
     ];
 
     let activeSlotId = null;
-    let data = JSON.parse(localStorage.getItem('territoryData')) || {};
+    let territoryData = JSON.parse(localStorage.getItem('territoryData')) || {};
+    let selectedMonday = localStorage.getItem('selectedMonday') || "";
+
+    function init() {
+        if (selectedMonday) {
+            document.getElementById('monday-picker').value = selectedMonday;
+        }
+        render();
+    }
+
+    function updateWeek() {
+        selectedMonday = document.getElementById('monday-picker').value;
+        localStorage.setItem('selectedMonday', selectedMonday);
+        render();
+    }
+
+    function getFormattedDate(baseDate, offsetDays) {
+        const d = new Date(baseDate + 'T00:00:00');
+        d.setDate(d.getDate() + offsetDays);
+        const day = d.getDate();
+        const month = d.toLocaleString('es-ES', { month: 'short' }).replace('.', '');
+        return `${day} ${month}`;
+    }
 
     function render() {
         const grid = document.getElementById('main-grid');
+        const rangeText = document.getElementById('week-range-text');
         grid.innerHTML = '';
-        document.getElementById('week-label').innerText = "Para la semana del 9 de Marzo al 15 de Marzo de 2026";
 
-        days.forEach((day, dIdx) => {
+        if (!selectedMonday) {
+            rangeText.innerText = "Por favor selecciona el lunes para comenzar";
+            return;
+        }
+
+        // Actualizar el título del rango
+        const start = getFormattedDate(selectedMonday, 0);
+        const end = getFormattedDate(selectedMonday, 6);
+        const year = new Date(selectedMonday + 'T00:00:00').getFullYear();
+        rangeText.innerText = `Para la semana del ${start} al ${end} de ${year}`;
+
+        weekStructure.forEach((day, dIdx) => {
             const col = document.createElement('div');
             col.className = 'day-column';
             
+            const dayDateString = getFormattedDate(selectedMonday, day.offset);
+
             for(let s = 0; s < day.shifts; s++) {
                 const id = `slot-${dIdx}-${s}`;
-                const territories = data[id] || [];
+                const territories = territoryData[id] || [];
                 
                 const card = document.createElement('div');
                 card.className = 'card';
@@ -246,7 +225,7 @@
                 card.innerHTML = `
                     <div class="day-info">
                         <div class="day-name">${day.name}</div>
-                        <div class="day-date">${day.date}</div>
+                        <div class="day-date">${dayDateString}</div>
                     </div>
                     <div class="territory-list">${tHtml}</div>
                     <button class="btn-add" onclick="openModal('${id}')">+</button>
@@ -266,62 +245,62 @@
             const b = document.createElement('button');
             b.className = 'num-btn';
             b.innerText = i;
-            b.onclick = () => selectNum(i);
+            b.onclick = () => {
+                if(!territoryData[activeSlotId]) territoryData[activeSlotId] = [];
+                territoryData[activeSlotId].push(i);
+                saveAndRefresh();
+                closeModal();
+            };
             numGrid.appendChild(b);
         }
     }
 
-    function selectNum(num) {
-        if(!data[activeSlotId]) data[activeSlotId] = [];
-        data[activeSlotId].push(num);
-        saveAndRefresh();
-        closeModal();
-    }
-
     function removeT(id, index, e) {
         e.stopPropagation();
-        data[id].splice(index, 1);
+        territoryData[id].splice(index, 1);
         saveAndRefresh();
     }
 
     function saveAndRefresh() {
-        localStorage.setItem('territoryData', JSON.stringify(data));
+        localStorage.setItem('territoryData', JSON.stringify(territoryData));
         render();
     }
 
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
     
     function clearData() {
-        if(confirm('¿Reiniciar toda la semana?')) {
-            data = {};
+        if(confirm('¿Reiniciar territorios? Las fechas se mantendrán.')) {
+            territoryData = {};
             saveAndRefresh();
         }
     }
 
     document.getElementById('btn-export').onclick = () => {
-        const btnRow = document.querySelector('.actions');
+        const actions = document.querySelector('.actions');
         const addBtns = document.querySelectorAll('.btn-add');
+        const picker = document.getElementById('picker-ui');
         
-        // Esconder UI de edición para la foto
-        btnRow.style.opacity = '0';
+        // Ocultar elementos de UI
+        actions.style.opacity = '0';
+        picker.style.opacity = '0';
         addBtns.forEach(b => b.style.opacity = '0');
 
         html2canvas(document.querySelector("#capture-area"), {
             scale: 3,
-            backgroundColor: "#f0f2f5",
-            borderRadius: 40
+            backgroundColor: "#f0f2f5"
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'Programacion-Semanal.png';
+            link.download = `Programacion_${selectedMonday}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             
-            btnRow.style.opacity = '1';
+            actions.style.opacity = '1';
+            picker.style.opacity = '1';
             addBtns.forEach(b => b.style.opacity = '1');
         });
     };
 
-    render();
+    init();
 </script>
 
 </body>
