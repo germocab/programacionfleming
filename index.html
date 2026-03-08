@@ -2,314 +2,1705 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territory Pro - Alta Visibilidad</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Territorios Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 
+    <style>
         :root {
-            --bg-main: #f0f2f5;
-            --accent: #007aff;
-            --glass: rgba(255, 255, 255, 0.8);
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            /* Nuevo Azul de alto contraste */
-            --t-bg: #0056b3; 
+            --bg: #f0f1f5;
+            --surface: #ffffff;
+            --surface2: #f7f8fa;
+            --accent: #1a56db;
+            --accent2: #7c3aed;
+            --text: #111827;
+            --text2: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --morning: #1a56db;
+            --afternoon: #d97706;
+            --badge-bg: #1a3a7a;
+            --rec-grad: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+            --rec-chip-shadow: 0 4px 15px rgba(22,163,74,0.25);
+            --shadow: 0 4px 24px rgba(0,0,0,0.07);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
         }
+
+        [data-theme="dark"] {
+            --bg: #0d0f14;
+            --surface: #181c26;
+            --surface2: #1e2230;
+            --accent: #3b82f6;
+            --accent2: #a78bfa;
+            --text: #f3f4f6;
+            --text2: #9ca3af;
+            --border: #2d3348;
+            --badge-bg: #1e3a8a;
+            --rec-grad: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+            --rec-chip-shadow: 0 4px 15px rgba(22,163,74,0.2);
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            color: #1d1d1f;
+            transition: background 0.3s, color 0.3s;
         }
 
-        #capture-area { padding: 50px; background: var(--bg-main); }
-
-        .container {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 40px;
-            padding: 40px;
-            width: 1000px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,255,255,0.4);
+        /* ── NAV ── */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 20px;
+            pointer-events: none;
         }
 
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; 
-            margin-bottom: 30px;
+        .nav-pill-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 5px 5px 5px 5px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            pointer-events: all;
         }
 
-        /* Eliminado "Hola Germán", actualizado título */
-        h1 { font-size: 2.2rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .subtitle { color: #86868b; font-weight: 600; margin-top: 5px; font-size: 1rem; }
-
-        .date-picker-container {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 1px solid #e5e5ea;
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
         }
-        .date-picker-container label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
-        input[type="date"] { border: none; font-family: inherit; font-weight: 600; outline: none; cursor: pointer; color: #1d1d1f; }
 
-        .week-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
-        .day-column { display: flex; flex-direction: column; gap: 15px; }
+        .nav-tab {
+            padding: 9px 22px;
+            border-radius: 999px;
+            border: none;
+            background: transparent;
+            color: var(--text2);
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
 
-        .card {
-            background: white;
-            aspect-ratio: 1 / 1;
-            border-radius: 24px;
+        .nav-tab.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 2px 10px rgba(26,86,219,0.25);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .theme-btn {
+            width: 38px; height: 38px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.18s;
+            flex-shrink: 0;
+        }
+
+        .theme-btn:hover { background: var(--border); }
+
+        .theme-btn svg {
+            width: 16px; height: 16px;
+            stroke: var(--text);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke 0.3s;
+        }
+
+        /* ── VIEWS ── */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* ══════════════════════════════════════
+           VISTA 1: PROGRAMACIÓN SEMANAL
+        ══════════════════════════════════════ */
+
+        #view-schedule {
+            padding: 8px 20px 24px;
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .schedule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .schedule-title h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .schedule-title p {
+            color: var(--text2);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .date-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 10px 20px;
+        }
+
+        .date-box label {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .date-box input[type="date"] {
+            border: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Recomendaciones semanales */
+        .rec-section {
+            background: var(--surface);
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .rec-section-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rec-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .rec-week-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .rec-day-col {
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            position: relative;
-            border: 1px solid #f2f2f7;
+            gap: 8px;
         }
 
-        .day-info { margin-bottom: 8px; }
-        .day-name { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; color: #1d1d1f; }
-        .day-date { font-size: 0.7rem; color: #86868b; font-weight: 600; }
+        .rec-day-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text2);
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
 
-        .territory-list { flex-grow: 1; display: flex; flex-wrap: wrap; gap: 5px; align-content: center; justify-content: center; }
-
-        /* REDISEÑO DE NÚMEROS: ALTO CONTRASTE */
-        .t-badge {
-            background-color: var(--t-bg); /* Azul oscuro plano */
-            color: white; /* Blanco puro */
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; /* Negrita extra */
-            font-size: 1.3rem; /* Ligeramente más grande */
+        .rec-chip {
+            background: var(--rec-grad);
+            border-radius: 16px;
+            padding: 10px 4px;
+            text-align: center;
+            color: white;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra más definida */
+            transition: opacity 0.15s, transform 0.15s;
+            position: relative;
+            box-shadow: var(--rec-chip-shadow);
         }
+
+        .rec-chip:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        .rec-chip .rnum {
+            font-family: 'DM Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: block;
+        }
+
+        .rec-chip .rdate {
+            font-size: 0.62rem;
+            opacity: 0.85;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .rec-chip .rshift {
+            font-size: 0.58rem;
+            opacity: 0.75;
+            display: block;
+            margin-top: 1px;
+        }
+
+        .rec-chip.shift-m { background: linear-gradient(135deg, #16a34a, #22c55e); }
+        .rec-chip.shift-t { background: linear-gradient(135deg, #d97706, #f59e0b); }
+
+        .add-to-slot-btn {
+            font-size: 0.6rem;
+            font-weight: 700;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 2px 5px;
+            margin-top: 4px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        /* Grilla semanal */
+        .week-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+        }
+
+        .day-col { display: flex; flex-direction: column; gap: 14px; }
+
+        .day-card {
+            background: var(--surface);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            padding: 14px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: box-shadow 0.2s;
+        }
+
+        .day-card:hover { box-shadow: var(--shadow-lg); }
+
+        .day-header { margin-bottom: 8px; }
+        .day-name { font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3px; }
+        .day-date { font-size: 0.65rem; color: var(--text2); font-weight: 500; }
+
+        .shift-label {
+            font-size: 0.58rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 7px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+
+        .shift-label.m { background: rgba(26,86,219,0.12); color: var(--morning); }
+        .shift-label.t { background: rgba(217,119,6,0.12); color: var(--afternoon); }
+
+        .t-list {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-content: center;
+            justify-content: center;
+        }
+
+        .t-badge {
+            background: var(--badge-bg);
+            color: white;
+            width: 38px; height: 38px;
+            border-radius: 999px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 1.05rem;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+            transition: transform 0.12s, opacity 0.12s;
+        }
+
+        .t-badge:hover { transform: scale(1.08); opacity: 0.85; }
 
         .btn-add {
-            position: absolute; bottom: 12px; right: 12px;
-            width: 30px; height: 30px;
-            background: #f2f2f7; border: none; border-radius: 8px;
-            color: var(--accent); font-size: 18px; font-weight: 600; cursor: pointer;
+            position: absolute;
+            bottom: 10px; right: 10px;
+            width: 28px; height: 28px;
+            border-radius: 999px;
+            border: none;
+            background: var(--surface2);
+            color: var(--accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .btn-add:hover { background: var(--border); }
+
+        /* Acciones */
+        .schedule-actions {
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .btn-danger { background: none; border: none; color: var(--danger); cursor: pointer; font-family: inherit; font-size: 0.85rem; font-weight: 600; }
+
+        .btn-confirm-week {
+            background: linear-gradient(135deg, #16a34a, #22c55e);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .btn-confirm-week:hover { opacity: 0.88; transform: translateY(-1px); }
+        
+        .btn-export {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.15s;
+        }
+
+        .btn-export:hover { opacity: 0.8; }
+
+        /* ══════════════════════════════════════
+           VISTA 2: BASE DE DATOS
+        ══════════════════════════════════════ */
+
+        #view-database {
+            padding: 24px 20px;
+            max-width: 520px;
+            margin: 0 auto;
+        }
+
+        .db-header {
+            margin-bottom: 24px;
+        }
+
+        .db-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .db-header p {
+            color: var(--text2);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .form-card {
+            background: var(--surface);
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            padding: 22px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text2);
+            margin-bottom: 7px;
+        }
+
+        .form-group select,
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 11px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus { border-color: var(--accent); }
+
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            border-radius: 999px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .btn-main:hover { opacity: 0.85; }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text);
+        }
+
+        .record-item {
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            padding: 15px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .record-info .rname {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .record-info .rdate {
+            color: var(--text2);
+            font-size: 0.82rem;
+            margin-top: 2px;
+        }
+
+        .record-info .rdel {
+            color: var(--danger);
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 6px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .tag {
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .tag.mañana { background: rgba(26,86,219,0.1); color: var(--morning); }
+        .tag.tarde { background: rgba(217,119,6,0.1); color: var(--afternoon); }
+
+        /* ══════════════════════════════════════
+           MODAL
+        ══════════════════════════════════════ */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(6px);
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+        }
+
+        .modal.open { display: flex; }
+
+        .modal-box {
+            background: var(--surface);
+            border-radius: 32px;
+            padding: 24px;
+            width: 340px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-box h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-box .modal-sub {
+            font-size: 0.8rem;
+            color: var(--text2);
+            margin-bottom: 16px;
+        }
+
+        .num-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 7px;
+            max-height: 240px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding: 2px;
+        }
+
+        .num-btn {
+            aspect-ratio: 1/1;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            background: var(--surface2);
+            color: var(--text);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.13s;
             display: flex; align-items: center; justify-content: center;
         }
 
-        .actions { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; }
-        
-        #btn-export {
-            background: #1d1d1f; color: white; border: none;
-            padding: 12px 24px; border-radius: 14px;
-            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        .num-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
         }
-        #btn-export:hover { background: #000; transform: translateY(-1px); }
 
-        /* Modal */
-        .modal {
-            display: none; position: fixed; inset: 0;
-            background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
-            align-items: center; justify-content: center; z-index: 1000;
+        .btn-cancel {
+            width: 100%;
+            padding: 11px;
+            border-radius: 11px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
         }
-        .modal-content { background: white; padding: 25px; border-radius: 25px; width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center;}
-        .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; max-height: 220px; overflow-y: auto; padding: 5px;}
-        .num-btn { padding: 10px; border: 1px solid #e5e5ea; border-radius: 10px; background: #f9f9fb; cursor: pointer; font-weight: 600; font-size: 1rem; }
-        .num-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* ── IMPORT / EXPORT PANEL ── */
+        .io-panel {
+            background: var(--surface);
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            padding: 20px 22px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .io-panel-title {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text2);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .io-panel-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .io-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-io {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-io:hover { background: var(--border); }
+
+        .btn-io.import { border-color: var(--accent); color: var(--accent); background: rgba(26,86,219,0.06); }
+        .btn-io.import:hover { background: rgba(26,86,219,0.12); }
+
+        .btn-io svg { flex-shrink: 0; }
+
+        .import-note {
+            font-size: 0.72rem;
+            color: var(--text2);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #111827;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 999;
+            transition: transform 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── HISTORY WEEK VIEW ── */
+        .history-week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .history-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 4px 6px;
+            box-shadow: var(--shadow);
+        }
+
+        .hist-nav-btn {
+            width: 32px; height: 32px;
+            border-radius: 999px;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .hist-nav-btn:hover:not(:disabled) { background: var(--surface2); }
+        .hist-nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+        /* Read-only day cards for history */
+        .day-card.readonly {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .day-card.readonly .t-badge {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .t-badge.shift-m { background: var(--morning); }
+        .t-badge.shift-t { background: var(--afternoon); }
+
+        /* ── CAPTURE FRAME ── */
+        #capture-frame {
+            padding: 40px;
+            background: var(--bg);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 700px) {
+            .week-grid, .rec-week-grid { grid-template-columns: repeat(3, 1fr); }
+            .nav-tab { padding: 8px 12px; font-size: 0.8rem; }
+        }
+
+        @media (max-width: 440px) {
+            .week-grid, .rec-week-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Fade in */
+        .view.active {
+            animation: fadeIn 0.22s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<div id="capture-area">
-    <div class="container">
-        <header>
-            <div>
-                <h1>Programación de Territorios</h1>
-                <div class="subtitle" id="week-range-text">Cargando semana...</div>
-            </div>
-            <div class="date-picker-container" id="picker-ui">
-                <label>Lunes de la semana</label>
-                <input type="date" id="monday-picker" onchange="updateWeek()">
-            </div>
-        </header>
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-pill-wrap">
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchView('schedule', this)">Programación</button>
+            <button class="nav-tab" onclick="switchView('database', this)">Base de Datos</button>
+        </div>
+        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Cambiar tema">
+            <!-- Sol (modo claro visible) -->
+            <svg id="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="2" x2="12" y2="4"/>
+                <line x1="12" y1="20" x2="12" y2="22"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="2" y1="12" x2="4" y2="12"/>
+                <line x1="20" y1="12" x2="22" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <!-- Luna (modo oscuro visible) -->
+            <svg id="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display:none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+    </div>
+</nav>
 
-        <div class="week-grid" id="main-grid"></div>
+<!-- ══════════════════════════════════════
+     VISTA 1: PROGRAMACIÓN SEMANAL
+══════════════════════════════════════ -->
+<div id="view-schedule" class="view active">
+    <div id="capture-frame">
+        <div id="view-schedule-inner" style="max-width:1100px; margin:0 auto;">
 
-        <div class="actions">
-            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600; font-size:0.9rem;">Reiniciar territorios</button>
-            <button id="btn-export">📤 Compartir imagen</button>
+            <div class="schedule-header">
+                <div class="schedule-title">
+                    <h2>Programación Semanal</h2>
+                    <p id="week-label">Selecciona el lunes para comenzar</p>
+                </div>
+                <div class="date-box" id="date-box-ui">
+                    <label>Lunes de la semana</label>
+                    <input type="date" id="monday-picker" onchange="updateWeek()">
+                </div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="rec-section" id="rec-section-ui">
+                <div class="rec-section-title">Sugerencia semanal · según historial</div>
+                <div class="rec-week-grid" id="rec-week-grid"></div>
+            </div>
+
+            <!-- Grilla -->
+            <div class="week-grid" id="main-grid"></div>
+
+            <div class="schedule-actions" id="schedule-actions-ui">
+                <button class="btn-danger" onclick="clearSchedule()">Reiniciar semana</button>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button class="btn-confirm-week" onclick="confirmWeekToDatabase()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        Confirmar semana
+                    </button>
+                    <button class="btn-export" onclick="exportImage()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Compartir imagen
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <h3 style="margin-top:0; font-size:1.2rem;">Asignar Territorio</h3>
-        <div class="num-grid" id="num-grid"></div>
-        <button onclick="closeModal()" style="width:100%; padding:10px; border:none; border-radius:12px; background:#f2f2f7; cursor:pointer; font-weight:600;">Cancelar</button>
+<!-- ══════════════════════════════════════
+     VISTA 2: BASE DE DATOS
+══════════════════════════════════════ -->
+<div id="view-database" class="view">
+    <!-- Formulario + IO: ancho reducido, centrado -->
+    <div style="max-width:520px; margin: 0 auto; padding: 24px 20px 0;">
+
+        <div class="db-header">
+            <h2>Base de Datos</h2>
+            <p>Registra cuándo se completó cada territorio</p>
+        </div>
+
+        <!-- Panel Importar / Exportar -->
+        <div class="io-panel">
+            <div class="io-panel-title">Importar · Exportar historial</div>
+            <div class="io-btns">
+                <button class="btn-io import" onclick="document.getElementById('file-import').click()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Importar CSV / Excel
+                </button>
+                <button class="btn-io" onclick="exportCSV()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Exportar CSV
+                </button>
+                <button class="btn-io" onclick="exportExcel()" style="grid-column: span 2;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    Exportar Excel (.xlsx)
+                </button>
+            </div>
+            <p class="import-note">
+                El archivo debe tener columnas: <strong>Territorio</strong>, <strong>Fecha</strong> (DD/MM/YYYY) y <strong>Turno</strong>. Al importar, los datos existentes se fusionan manteniendo siempre el registro más reciente por territorio.
+            </p>
+            <input type="file" id="file-import" accept=".csv,.xlsx,.xls" style="display:none" onchange="importFile(this)">
+        </div>
+
+        <div class="form-card">
+            <div class="form-group">
+                <label>Territorio</label>
+                <select id="db-territorio"></select>
+            </div>
+            <div class="form-group">
+                <label>Fecha de completado</label>
+                <input type="date" id="db-fecha">
+            </div>
+            <div class="form-group">
+                <label>Jornada</label>
+                <select id="db-turno">
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                </select>
+            </div>
+            <button class="btn-main" onclick="saveRecord()">Registrar</button>
+        </div>
+    </div>
+
+    <!-- Historial semanal: ancho completo -->
+    <div style="max-width:1140px; margin: 0 auto; padding: 0 20px 40px;">
+        <div class="history-week-header">
+            <div>
+                <div class="history-title">Historial por semana</div>
+                <div id="history-week-label" style="color:var(--text2); font-size:0.85rem; margin-top:2px;"></div>
+            </div>
+            <div class="history-nav">
+                <button class="hist-nav-btn" id="hist-prev" onclick="historyNavWeek(-1)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <span id="hist-page-label" style="font-size:0.8rem; font-weight:600; color:var(--text2); min-width:60px; text-align:center;"></span>
+                <button class="hist-nav-btn" id="hist-next" onclick="historyNavWeek(1)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="week-grid" id="history-grid"></div>
+        <div id="history-empty" style="display:none; text-align:center; color:var(--text2); font-size:0.85rem; padding:40px 0;">Sin registros aún.</div>
     </div>
 </div>
 
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h3>Asignar Territorio</h3>
+        <div class="modal-sub" id="modal-sub">Elige un número</div>
+        <div class="num-grid" id="num-grid"></div>
+        <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+    </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div id="confirm-modal" class="modal">
+    <div class="modal-box" style="max-width:320px;">
+        <h3 id="confirm-title" style="margin-bottom:6px;"></h3>
+        <p id="confirm-sub" style="font-size:0.82rem; color:var(--text2); margin-bottom:20px;"></p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-cancel" style="flex:1;" onclick="closeConfirm()">Cancelar</button>
+            <button id="confirm-ok" style="flex:1; padding:11px; border-radius:11px; border:none; background:var(--danger); color:white; font-family:inherit; font-size:0.9rem; font-weight:700; cursor:pointer;">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
 <script>
-    const weekStructure = [
-        { name: 'Lunes', offset: 0, shifts: 1 },
-        { name: 'Martes', offset: 1, shifts: 1 },
-        { name: 'Miércoles', offset: 2, shifts: 2 },
-        { name: 'Jueves', offset: 3, shifts: 1 },
-        { name: 'Viernes', offset: 4, shifts: 2 },
-        { name: 'Domingo', offset: 6, shifts: 1 }
+// ═══════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════
+
+const DAYS = [
+    { name: 'Lunes',     offset: 0, slots: ['M'] },
+    { name: 'Martes',    offset: 1, slots: ['M'] },
+    { name: 'Miércoles', offset: 2, slots: ['M', 'T'] },
+    { name: 'Jueves',    offset: 3, slots: ['M'] },
+    { name: 'Viernes',   offset: 4, slots: ['M', 'T'] },
+    { name: 'Domingo',   offset: 6, slots: ['M'] }
+];
+
+const SHIFT_LABEL = { M: 'Mañana', T: 'Tarde' };
+
+let scheduleData   = JSON.parse(localStorage.getItem('tp_schedule'))   || {};
+let selectedMonday = localStorage.getItem('tp_monday') || '';
+let records        = JSON.parse(localStorage.getItem('tp_records'))    || [];
+let activeSlotId   = null;
+
+// ═══════════════════════════════════════════════
+//  TEMA
+// ═══════════════════════════════════════════════
+
+function toggleTheme() {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    updateThemeIcon(!isDark);
+    localStorage.setItem('tp_theme', isDark ? 'light' : 'dark');
+}
+
+function updateThemeIcon(isDark) {
+    document.getElementById('icon-sun').style.display  = isDark ? 'none'  : '';
+    document.getElementById('icon-moon').style.display = isDark ? ''      : 'none';
+}
+
+(function initTheme() {
+    const t = localStorage.getItem('tp_theme') || 'light';
+    if (t === 'dark') {
+        document.body.setAttribute('data-theme', 'dark');
+        updateThemeIcon(true);
+    }
+})();
+
+// ═══════════════════════════════════════════════
+//  NAVEGACIÓN
+// ═══════════════════════════════════════════════
+
+function switchView(view, btn) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + view).classList.add('active');
+    btn.classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  UTILIDADES DE FECHA
+// ═══════════════════════════════════════════════
+
+function dateFromMonday(monday, offsetDays) {
+    const d = new Date(monday + 'T00:00:00');
+    d.setDate(d.getDate() + offsetDays);
+    return d;
+}
+
+function formatShort(dateObj) {
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleString('es-ES', { month: 'short' }).replace('.', '');
+    return `${day} ${month}`;
+}
+
+function daysBetween(dateStr) {
+    if (!dateStr || dateStr === '0000-00-00') return null;
+    const d = new Date(dateStr + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    return Math.floor((today - d) / 86400000);
+}
+
+// ═══════════════════════════════════════════════
+//  RECOMENDACIONES SEMANALES
+// ═══════════════════════════════════════════════
+
+function getRecommendations() {
+    // Construir lista de todos los territorios con su última fecha
+    const states = [];
+    for (let i = 1; i <= 36; i++) {
+        const rec = records.find(r => parseInt(r.territorio) === i);
+        states.push({
+            num: i,
+            fecha: rec ? rec.fecha : '0000-00-00',
+            days: rec ? daysBetween(rec.fecha) : 9999
+        });
+    }
+    // Ordenar: el más antiguo (más días sin hacerse) primero
+    states.sort((a, b) => b.days - a.days);
+
+    // Necesitamos 8 recomendaciones en orden:
+    // Lu(M), Ma(M), Mi(M), Mi(T), Ju(M), Vi(M), Vi(T), Do(M)
+    const slots = [
+        { dayIdx:0, shift:'M' },
+        { dayIdx:1, shift:'M' },
+        { dayIdx:2, shift:'M' },
+        { dayIdx:2, shift:'T' },
+        { dayIdx:3, shift:'M' },
+        { dayIdx:4, shift:'M' },
+        { dayIdx:4, shift:'T' },
+        { dayIdx:5, shift:'M' }
     ];
 
-    let activeSlotId = null;
-    let territoryData = JSON.parse(localStorage.getItem('territoryData')) || {};
-    let selectedMonday = localStorage.getItem('selectedMonday') || "";
+    return slots.map((s, i) => ({
+        ...s,
+        territory: states[i] ? states[i].num : '?',
+        fecha: states[i] ? states[i].fecha : null,
+        days: states[i] ? states[i].days : null
+    }));
+}
 
-    function init() {
-        if (selectedMonday) {
-            document.getElementById('monday-picker').value = selectedMonday;
-        } else {
-            // Cargar semana actual por defecto si no hay guardada
-            const today = new Date();
-            const day = today.getDay(); // 0 (Dom) - 6 (Sab)
-            const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para Lunes
-            const monday = new Date(today.setDate(diff));
-            selectedMonday = monday.toISOString().split('T')[0];
-            document.getElementById('monday-picker').value = selectedMonday;
-            localStorage.setItem('selectedMonday', selectedMonday);
+function renderRecommendations() {
+    const grid = document.getElementById('rec-week-grid');
+    grid.innerHTML = '';
+    const recs = getRecommendations();
+
+    DAYS.forEach((day, dIdx) => {
+        const col = document.createElement('div');
+        col.className = 'rec-day-col';
+
+        const lbl = document.createElement('div');
+        lbl.className = 'rec-day-label';
+        lbl.textContent = day.name;
+        col.appendChild(lbl);
+
+        // Slots para este día
+        const dayRecs = recs.filter(r => r.dayIdx === dIdx);
+        dayRecs.forEach(rec => {
+            const chip = document.createElement('div');
+            chip.className = 'rec-chip ' + (rec.shift === 'M' ? 'shift-m' : 'shift-t');
+
+            let subtitle = '';
+            if (rec.days === 9999) subtitle = 'Sin asignar';
+            else if (rec.days !== null) subtitle = `hace ${rec.days}d`;
+
+            const slotId = `slot-${dIdx}-${day.slots.indexOf(rec.shift)}`;
+
+            chip.innerHTML = `
+                <span class="rnum">${rec.territory}</span>
+                <span class="rdate">${subtitle}</span>
+                <span class="rshift">${SHIFT_LABEL[rec.shift]}</span>
+                <button class="add-to-slot-btn" onclick="applyRec('${slotId}', ${rec.territory}, event)">+ Añadir</button>
+            `;
+            col.appendChild(chip);
+        });
+
+        grid.appendChild(col);
+    });
+}
+
+function applyRec(slotId, num, e) {
+    e.stopPropagation();
+    if (!scheduleData[slotId]) scheduleData[slotId] = [];
+    if (!scheduleData[slotId].includes(num)) {
+        scheduleData[slotId].push(num);
+        saveSchedule();
+    }
+}
+
+// ═══════════════════════════════════════════════
+//  VISTA PROGRAMACIÓN
+// ═══════════════════════════════════════════════
+
+function initSchedule() {
+    if (selectedMonday) {
+        document.getElementById('monday-picker').value = selectedMonday;
+    } else {
+        const today = new Date();
+        const day = today.getDay();
+        const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(today.setDate(diff));
+        selectedMonday = monday.toISOString().split('T')[0];
+        document.getElementById('monday-picker').value = selectedMonday;
+        localStorage.setItem('tp_monday', selectedMonday);
+    }
+    renderSchedule();
+}
+
+function updateWeek() {
+    selectedMonday = document.getElementById('monday-picker').value;
+    localStorage.setItem('tp_monday', selectedMonday);
+    renderSchedule();
+}
+
+function renderSchedule() {
+    const grid = document.getElementById('main-grid');
+    const label = document.getElementById('week-label');
+    grid.innerHTML = '';
+
+    if (!selectedMonday) {
+        label.textContent = 'Selecciona el lunes para comenzar';
+        renderRecommendations();
+        return;
+    }
+
+    const startDate = dateFromMonday(selectedMonday, 0);
+    const endDate   = dateFromMonday(selectedMonday, 6);
+    const year      = startDate.getFullYear();
+    label.textContent = `Semana del ${formatShort(startDate)} al ${formatShort(endDate)} de ${year}`;
+
+    renderRecommendations();
+
+    DAYS.forEach((day, dIdx) => {
+        const col = document.createElement('div');
+        col.className = 'day-col';
+        const dateStr = formatShort(dateFromMonday(selectedMonday, day.offset));
+
+        day.slots.forEach((shift, sIdx) => {
+            const id = `slot-${dIdx}-${sIdx}`;
+            const territories = scheduleData[id] || [];
+
+            const card = document.createElement('div');
+            card.className = 'day-card';
+
+            const shiftClass = shift === 'M' ? 'm' : 't';
+            const shiftText  = SHIFT_LABEL[shift];
+
+            let badges = territories.map((n, i) =>
+                `<div class="t-badge" onclick="removeTerritory('${id}', ${i}, event)" title="Clic para quitar">${n}</div>`
+            ).join('');
+
+            card.innerHTML = `
+                <div class="day-header">
+                    <div class="day-name">${day.name}</div>
+                    <div class="day-date">${dateStr}</div>
+                </div>
+                ${day.slots.length > 1 ? `<span class="shift-label ${shiftClass}">${shiftText}</span>` : ''}
+                <div class="t-list">${badges}</div>
+                <button class="btn-add" onclick="openModal('${id}', '${day.name} ${shiftText}')">+</button>
+            `;
+            col.appendChild(card);
+        });
+
+        grid.appendChild(col);
+    });
+}
+
+function removeTerritory(id, idx, e) {
+    e.stopPropagation();
+    scheduleData[id].splice(idx, 1);
+    saveSchedule();
+}
+
+function saveSchedule() {
+    localStorage.setItem('tp_schedule', JSON.stringify(scheduleData));
+    renderSchedule();
+}
+
+function clearSchedule() {
+    showConfirm('¿Reiniciar todos los territorios de esta semana?', 'Las fechas se mantienen.', () => {
+        scheduleData = {};
+        saveSchedule();
+    });
+}
+
+function confirmWeekToDatabase() {
+    if (!selectedMonday) {
+        showToast('⚠️ Selecciona primero la semana a confirmar.');
+        return;
+    }
+
+    // Recopilar todos los territorios asignados con su fecha y turno
+    const toRegister = [];
+
+    DAYS.forEach((day, dIdx) => {
+        day.slots.forEach((shift, sIdx) => {
+            const id = `slot-${dIdx}-${sIdx}`;
+            const territories = scheduleData[id] || [];
+            const fecha = dateFromMonday(selectedMonday, day.offset).toISOString().split('T')[0];
+            const turno = SHIFT_LABEL[shift];
+
+            territories.forEach(num => {
+                toRegister.push({ territorio: String(num), fecha, turno });
+            });
+        });
+    });
+
+    if (toRegister.length === 0) {
+        showToast('⚠️ No hay territorios asignados esta semana.');
+        return;
+    }
+
+    showConfirm(
+        `¿Confirmar ${toRegister.length} territorio${toRegister.length > 1 ? 's' : ''} en la base de datos?`,
+        'Se registrarán con la fecha de cada día planificado, reemplazando registros anteriores.',
+        () => {
+            // Reemplazar siempre: quitar los que ya existen y añadir los nuevos
+            toRegister.forEach(entry => {
+                records = records.filter(r => String(r.territorio) !== entry.territorio);
+                records.unshift({ id: Date.now() + Math.random(), ...entry });
+            });
+
+            // Reordenar por fecha descendente
+            records.sort((a, b) => b.fecha.localeCompare(a.fecha));
+            localStorage.setItem('tp_records', JSON.stringify(records));
+
+            renderRecords();
+            renderRecommendations();
+            showToast(`✅ ${toRegister.length} territorios registrados en la base de datos.`);
         }
-        render();
+    );
+}
+
+// ═══════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════
+
+function openModal(slotId, label) {
+    activeSlotId = slotId;
+    document.getElementById('modal-sub').textContent = label || 'Elige un número';
+    document.getElementById('modal').classList.add('open');
+
+    const grid = document.getElementById('num-grid');
+    grid.innerHTML = '';
+    for (let i = 1; i <= 36; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.textContent = i;
+        btn.onclick = () => {
+            if (!scheduleData[activeSlotId]) scheduleData[activeSlotId] = [];
+            scheduleData[activeSlotId].push(i);
+            saveSchedule();
+            closeModal();
+        };
+        grid.appendChild(btn);
+    }
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ═══════════════════════════════════════════════
+//  EXPORTAR IMAGEN
+// ═══════════════════════════════════════════════
+
+function exportImage() {
+    const actionsUI = document.getElementById('schedule-actions-ui');
+    const dateBoxUI = document.getElementById('date-box-ui');
+    const recSec    = document.getElementById('rec-section-ui');
+    const addBtns   = document.querySelectorAll('.btn-add');
+    const badges    = document.querySelectorAll('.t-badge');
+
+    actionsUI.style.display = 'none';
+    dateBoxUI.style.display = 'none';
+    recSec.style.display    = 'none';
+    addBtns.forEach(b => b.style.display = 'none');
+    // Deshabilita hover cursors para captura limpia
+    badges.forEach(b => b.style.cursor = 'default');
+
+    html2canvas(document.getElementById('capture-frame'), {
+        scale: 3,
+        backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg').trim() || '#f0f1f5',
+        useCORS: true,
+        logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Programacion_${selectedMonday || 'semana'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        actionsUI.style.display = '';
+        dateBoxUI.style.display = '';
+        recSec.style.display    = '';
+        addBtns.forEach(b => b.style.display = '');
+        badges.forEach(b => b.style.cursor = '');
+    });
+}
+
+// ═══════════════════════════════════════════════
+//  BASE DE DATOS
+// ═══════════════════════════════════════════════
+
+(function initDB() {
+    const sel = document.getElementById('db-territorio');
+    for (let i = 1; i <= 36; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Territorio ${i}`;
+        sel.appendChild(opt);
     }
 
-    function updateWeek() {
-        selectedMonday = document.getElementById('monday-picker').value;
-        localStorage.setItem('selectedMonday', selectedMonday);
-        render();
-    }
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    document.getElementById('db-fecha').value =
+        new Date(today.getTime() - offset * 60000).toISOString().split('T')[0];
+})();
 
-    function getFormattedDate(baseDate, offsetDays) {
-        const d = new Date(baseDate + 'T00:00:00');
-        d.setDate(d.getDate() + offsetDays);
-        const day = d.getDate();
-        const month = d.toLocaleString('es-ES', { month: 'short' }).replace('.', '');
-        return `${day} ${month}`;
-    }
+function saveRecord() {
+    const n = document.getElementById('db-territorio').value;
+    const f = document.getElementById('db-fecha').value;
+    const t = document.getElementById('db-turno').value;
+    if (!f) return;
 
-    function render() {
-        const grid = document.getElementById('main-grid');
-        const rangeText = document.getElementById('week-range-text');
-        grid.innerHTML = '';
+    // Reemplaza registro anterior del mismo territorio
+    records = records.filter(r => r.territorio !== n);
+    records.unshift({ id: Date.now(), territorio: n, fecha: f, turno: t });
+    records.sort((a, b) => b.fecha.localeCompare(a.fecha));
 
-        if (!selectedMonday) {
-            rangeText.innerText = "Por favor selecciona el lunes para comenzar";
-            return;
+    localStorage.setItem('tp_records', JSON.stringify(records));
+    renderRecords();
+    renderRecommendations(); // Actualiza sugerencias en programación
+}
+
+function deleteRecord(id) {
+    showConfirm('¿Eliminar este registro?', 'Esta acción no se puede deshacer.', () => {
+        records = records.filter(r => r.id !== id);
+        localStorage.setItem('tp_records', JSON.stringify(records));
+        renderRecords();
+        renderRecommendations();
+    });
+}
+
+// ═══════════════════════════════════════════════
+//  HISTORIAL SEMANAL (Base de Datos)
+// ═══════════════════════════════════════════════
+
+let historyWeekIndex = 0; // 0 = más reciente
+let historyWeeks = [];    // array de lunes (YYYY-MM-DD), ordenados más reciente primero
+
+// Dado una fecha YYYY-MM-DD, retorna el lunes de esa semana
+function getMondayOf(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    const day = d.getDay(); // 0=Dom
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().split('T')[0];
+}
+
+function buildHistoryWeeks() {
+    const mondaySet = new Set();
+    records.forEach(r => {
+        if (r.fecha && r.fecha !== '0000-00-00') {
+            mondaySet.add(getMondayOf(r.fecha));
         }
+    });
+    // Ordenar más reciente primero
+    historyWeeks = Array.from(mondaySet).sort((a, b) => b.localeCompare(a));
+}
 
-        const start = getFormattedDate(selectedMonday, 0);
-        const end = getFormattedDate(selectedMonday, 6);
-        const year = new Date(selectedMonday + 'T00:00:00').getFullYear();
-        rangeText.innerText = `Semana del ${start} al ${end} de ${year}`;
+function renderRecords() {
+    buildHistoryWeeks();
+    // Asegurar índice válido
+    if (historyWeeks.length === 0) {
+        document.getElementById('history-grid').innerHTML = '';
+        document.getElementById('history-empty').style.display = 'block';
+        document.getElementById('history-week-label').textContent = '';
+        document.getElementById('hist-page-label').textContent = '';
+        return;
+    }
+    document.getElementById('history-empty').style.display = 'none';
+    if (historyWeekIndex >= historyWeeks.length) historyWeekIndex = 0;
+    renderHistoryWeek();
+}
 
-        weekStructure.forEach((day, dIdx) => {
-            const col = document.createElement('div');
-            col.className = 'day-column';
-            const dayDateString = getFormattedDate(selectedMonday, day.offset);
+function historyNavWeek(dir) {
+    historyWeekIndex = Math.max(0, Math.min(historyWeeks.length - 1, historyWeekIndex + dir));
+    renderHistoryWeek();
+}
 
-            for(let s = 0; s < day.shifts; s++) {
-                const id = `slot-${dIdx}-${s}`;
-                const territories = territoryData[id] || [];
-                const card = document.createElement('div');
-                card.className = 'card';
-                
-                let tHtml = territories.map((num, i) => 
-                    `<div class="t-badge" onclick="removeT('${id}', ${i}, event)">${num}</div>`
+function renderHistoryWeek() {
+    const monday = historyWeeks[historyWeekIndex];
+    const grid = document.getElementById('history-grid');
+    const weekLabel = document.getElementById('history-week-label');
+    const pageLabel = document.getElementById('hist-page-label');
+    const prevBtn = document.getElementById('hist-prev');
+    const nextBtn = document.getElementById('hist-next');
+
+    // Navegación
+    prevBtn.disabled = historyWeekIndex <= 0;
+    nextBtn.disabled = historyWeekIndex >= historyWeeks.length - 1;
+    pageLabel.textContent = `${historyWeekIndex + 1} / ${historyWeeks.length}`;
+
+    // Etiqueta de semana
+    const startDate = dateFromMonday(monday, 0);
+    const endDate   = dateFromMonday(monday, 6);
+    weekLabel.textContent = `Semana del ${formatShort(startDate)} al ${formatShort(endDate)} de ${startDate.getFullYear()}`;
+
+    grid.innerHTML = '';
+
+    DAYS.forEach((day, dIdx) => {
+        const col = document.createElement('div');
+        col.className = 'day-col';
+        const dateObj  = dateFromMonday(monday, day.offset);
+        const dateStr  = dateObj.toISOString().split('T')[0];
+        const dateDisp = formatShort(dateObj);
+
+        day.slots.forEach((shift, sIdx) => {
+            // Buscar registros que caigan exactamente en esta fecha
+            const shiftLabel = SHIFT_LABEL[shift];
+            const matching = records.filter(r =>
+                r.fecha === dateStr && r.turno === shiftLabel
+            );
+
+            const card = document.createElement('div');
+            card.className = 'day-card readonly';
+
+            const shiftClass = shift === 'M' ? 'm' : 't';
+
+            let badges = '';
+            if (matching.length > 0) {
+                badges = matching.map(r =>
+                    `<div class="t-badge shift-${shiftClass}">${r.territorio}</div>`
                 ).join('');
-
-                card.innerHTML = `
-                    <div class="day-info">
-                        <div class="day-name">${day.name}</div>
-                        <div class="day-date">${dayDateString}</div>
-                    </div>
-                    <div class="territory-list">${tHtml}</div>
-                    <button class="btn-add" onclick="openModal('${id}')">+</button>
-                `;
-                col.appendChild(card);
             }
-            grid.appendChild(col);
+
+            card.innerHTML = `
+                <div class="day-header">
+                    <div class="day-name">${day.name}</div>
+                    <div class="day-date">${dateDisp}</div>
+                </div>
+                ${day.slots.length > 1 ? `<span class="shift-label ${shiftClass}">${shiftLabel}</span>` : ''}
+                <div class="t-list">${badges}</div>
+            `;
+            col.appendChild(card);
         });
-    }
 
-    function openModal(id) {
-        activeSlotId = id;
-        document.getElementById('modal').style.display = 'flex';
-        const numGrid = document.getElementById('num-grid');
-        numGrid.innerHTML = '';
-        for(let i=1; i<=36; i++) {
-            const b = document.createElement('button');
-            b.className = 'num-btn';
-            b.innerText = i;
-            b.onclick = () => {
-                if(!territoryData[activeSlotId]) territoryData[activeSlotId] = [];
-                territoryData[activeSlotId].push(i);
-                saveAndRefresh();
-                closeModal();
-            };
-            numGrid.appendChild(b);
+        grid.appendChild(col);
+    });
+}
+
+// ═══════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════
+
+function showToast(msg, duration = 3000) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), duration);
+}
+
+let _confirmCallback = null;
+
+function showConfirm(title, sub, callback) {
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-sub').textContent = sub;
+    _confirmCallback = callback;
+    document.getElementById('confirm-modal').classList.add('open');
+}
+
+function closeConfirm() {
+    document.getElementById('confirm-modal').classList.remove('open');
+    _confirmCallback = null;
+}
+
+document.getElementById('confirm-ok').onclick = () => {
+    if (_confirmCallback) _confirmCallback();
+    closeConfirm();
+};
+
+// ═══════════════════════════════════════════════
+//  IMPORT / EXPORT
+// ═══════════════════════════════════════════════
+
+// Convierte DD/MM/YYYY → YYYY-MM-DD (formato interno)
+function parseDateDDMMYYYY(str) {
+    if (!str) return null;
+    str = String(str).trim();
+    // Si ya viene como YYYY-MM-DD (por si acaso)
+    if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+    // DD/MM/YYYY
+    const m = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+    if (m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+    return null;
+}
+
+// Convierte número de serie Excel a fecha YYYY-MM-DD
+function excelSerialToDate(serial) {
+    // Excel epoch: 1 Jan 1900 = 1 (con bug de año bisiesto 1900)
+    const utc = (serial - 25569) * 86400 * 1000;
+    const d = new Date(utc);
+    return d.toISOString().split('T')[0];
+}
+
+function parseRowsToRecords(rows) {
+    // rows: array de objetos con keys Territorio, Fecha, Turno
+    const parsed = [];
+    rows.forEach(row => {
+        const num = String(row['Territorio'] || '').trim();
+        let fecha = row['Fecha'];
+        const turno = String(row['Turno'] || 'Mañana').trim();
+
+        if (!num || isNaN(parseInt(num))) return;
+
+        // Si la fecha es un número (serial Excel)
+        if (typeof fecha === 'number') {
+            fecha = excelSerialToDate(fecha);
+        } else {
+            fecha = parseDateDDMMYYYY(String(fecha));
         }
-    }
 
-    function removeT(id, index, e) {
-        e.stopPropagation();
-        territoryData[id].splice(index, 1);
-        saveAndRefresh();
-    }
+        if (!fecha) return;
+        if (parseInt(num) < 1 || parseInt(num) > 36) return;
 
-    function saveAndRefresh() {
-        localStorage.setItem('territoryData', JSON.stringify(territoryData));
-        render();
-    }
+        parsed.push({ id: Date.now() + Math.random(), territorio: num, fecha, turno });
+    });
+    return parsed;
+}
 
-    function closeModal() { document.getElementById('modal').style.display = 'none'; }
-    
-    function clearData() {
-        if(confirm('¿Reiniciar territories? Las fechas se mantendrán.')) {
-            territoryData = {};
-            saveAndRefresh();
+function mergeRecords(incoming) {
+    // Fusiona: por cada territorio conserva el registro con fecha más reciente
+    const map = {};
+    [...records, ...incoming].forEach(r => {
+        const key = String(r.territorio);
+        if (!map[key] || r.fecha > map[key].fecha) {
+            map[key] = r;
         }
-    }
+    });
+    return Object.values(map).sort((a, b) => b.fecha.localeCompare(a.fecha));
+}
 
-    document.getElementById('btn-export').onclick = () => {
-        const actions = document.querySelector('.actions');
-        const addBtns = document.querySelectorAll('.btn-add');
-        const picker = document.getElementById('picker-ui');
-        
-        // Esconder elementos de edición para la captura
-        actions.style.display = 'none';
-        picker.style.display = 'none';
-        addBtns.forEach(b => b.style.display = 'none');
+function importFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop().toLowerCase();
 
-        html2canvas(document.querySelector("#capture-area"), {
-            scale: 3, // Alta calidad
-            backgroundColor: "#f0f2f5"
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `Programacion_Territorios_${selectedMonday}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            
-            // Mostrar elementos de edición de nuevo
-            actions.style.display = 'flex';
-            picker.style.display = 'block';
-            addBtns.forEach(b => b.style.display = 'flex');
-        });
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+        try {
+            let rows = [];
+
+            if (ext === 'csv') {
+                // Parsear CSV manualmente
+                const text = e.target.result;
+                const lines = text.trim().split('\n');
+                const headers = lines[0].split(',').map(h => h.trim().replace(/"/g,''));
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    const vals = lines[i].split(',').map(v => v.trim().replace(/"/g,''));
+                    const obj = {};
+                    headers.forEach((h, idx) => obj[h] = vals[idx] || '');
+                    rows.push(obj);
+                }
+            } else {
+                // Excel con SheetJS
+                const data = new Uint8Array(e.target.result);
+                const wb = XLSX.read(data, { type: 'array', cellDates: false });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+            }
+
+            const incoming = parseRowsToRecords(rows);
+            if (incoming.length === 0) {
+                showToast('⚠️ No se encontraron datos válidos en el archivo.');
+                input.value = '';
+                return;
+            }
+
+            records = mergeRecords(incoming);
+            localStorage.setItem('tp_records', JSON.stringify(records));
+            renderRecords();
+            renderRecommendations();
+            showToast(`✅ ${incoming.length} registros importados correctamente.`);
+        } catch (err) {
+            showToast('❌ Error al leer el archivo. Verifica el formato.');
+            console.error(err);
+        }
+        input.value = '';
     };
 
-    init();
-</script>
+    if (ext === 'csv') {
+        reader.readAsText(file, 'UTF-8');
+    } else {
+        reader.readAsArrayBuffer(file);
+    }
+}
 
+function exportCSV() {
+    if (records.length === 0) { showToast('No hay registros para exportar.'); return; }
+    let csv = 'Territorio,Fecha,Turno\n';
+    records.forEach(r => {
+        const [y, m, d] = r.fecha.split('-');
+        csv += `${r.territorio},${d}/${m}/${y},${r.turno}\n`;
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Territorios_Backup_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ CSV exportado correctamente.');
+}
+
+function exportExcel() {
+    if (records.length === 0) { showToast('No hay registros para exportar.'); return; }
+    const data = records.map(r => {
+        const [y, m, d] = r.fecha.split('-');
+        return { Territorio: parseInt(r.territorio), Fecha: `${d}/${m}/${y}`, Turno: r.turno };
+    });
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    // Ancho de columnas
+    ws['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 10 }];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Territorios');
+    XLSX.writeFile(wb, `Territorios_Backup_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('✅ Excel exportado correctamente.');
+}
+
+// ═══════════════════════════════════════════════
+//  INICIO
+// ═══════════════════════════════════════════════
+initSchedule();
+renderRecords();
+</script>
 </body>
 </html>
