@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Territory Pro - Dinámico</title>
+    <title>Territory Pro - Alta Visibilidad</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
@@ -11,8 +11,10 @@
         :root {
             --bg-main: #f0f2f5;
             --accent: #007aff;
-            --glass: rgba(255, 255, 255, 0.7);
-            --card-shadow: 0 10px 30px -5px rgba(0,0,0,0.05);
+            --glass: rgba(255, 255, 255, 0.8);
+            --card-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            /* Nuevo Azul de alto contraste */
+            --t-bg: #0056b3; 
         }
 
         body {
@@ -26,99 +28,99 @@
             color: #1d1d1f;
         }
 
-        #capture-area { padding: 60px; background: var(--bg-main); }
+        #capture-area { padding: 50px; background: var(--bg-main); }
 
         .container {
             background: var(--glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 40px;
-            padding: 50px;
+            padding: 40px;
             width: 1000px;
             box-shadow: var(--card-shadow);
             border: 1px solid rgba(255,255,255,0.4);
         }
 
-        header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-start; }
-        h1 { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .subtitle { color: #86868b; font-size: 1.1rem; margin-top: 5px; font-weight: 600; }
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            margin-bottom: 30px;
+        }
+
+        /* Eliminado "Hola Germán", actualizado título */
+        h1 { font-size: 2.2rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .subtitle { color: #86868b; font-weight: 600; margin-top: 5px; font-size: 1rem; }
 
         .date-picker-container {
             background: white;
             padding: 10px 15px;
             border-radius: 12px;
             border: 1px solid #e5e5ea;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
         }
-        .date-picker-container label { font-size: 0.7rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-        input[type="date"] { border: none; font-family: inherit; font-weight: 600; outline: none; color: #1d1d1f; cursor: pointer; }
+        .date-picker-container label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+        input[type="date"] { border: none; font-family: inherit; font-weight: 600; outline: none; cursor: pointer; color: #1d1d1f; }
 
-        .week-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
-        .day-column { display: flex; flex-direction: column; gap: 20px; }
+        .week-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+        .day-column { display: flex; flex-direction: column; gap: 15px; }
 
         .card {
             background: white;
             aspect-ratio: 1 / 1;
-            border-radius: 28px;
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
             padding: 15px;
-            box-sizing: border-box;
             position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border: 1px solid #f2f2f7;
         }
 
-        .day-info { margin-bottom: 10px; }
-        .day-name { font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: #1d1d1f; }
-        .day-date { font-size: 0.75rem; color: #86868b; font-weight: 600; }
+        .day-info { margin-bottom: 8px; }
+        .day-name { font-weight: 800; font-size: 0.75rem; text-transform: uppercase; color: #1d1d1f; }
+        .day-date { font-size: 0.7rem; color: #86868b; font-weight: 600; }
 
-        .territory-list { flex-grow: 1; display: flex; flex-wrap: wrap; gap: 6px; align-content: center; justify-content: center; }
+        .territory-list { flex-grow: 1; display: flex; flex-wrap: wrap; gap: 5px; align-content: center; justify-content: center; }
 
+        /* REDISEÑO DE NÚMEROS: ALTO CONTRASTE */
         .t-badge {
-            background: linear-gradient(135deg, #007aff, #0051af);
-            color: white;
-            width: 42px; height: 42px;
-            border-radius: 14px;
+            background-color: var(--t-bg); /* Azul oscuro plano */
+            color: white; /* Blanco puro */
+            width: 40px; height: 40px;
+            border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3);
+            font-weight: 800; /* Negrita extra */
+            font-size: 1.3rem; /* Ligeramente más grande */
             cursor: pointer;
-            animation: popIn 0.3s ease-out;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); /* Sombra más definida */
         }
-
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
         .btn-add {
-            position: absolute; bottom: 15px; right: 15px;
-            width: 32px; height: 32px;
-            background: #f2f2f7; border: none; border-radius: 10px;
-            color: #007aff; font-size: 20px; font-weight: 600; cursor: pointer;
+            position: absolute; bottom: 12px; right: 12px;
+            width: 30px; height: 30px;
+            background: #f2f2f7; border: none; border-radius: 8px;
+            color: var(--accent); font-size: 18px; font-weight: 600; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
 
-        .actions { margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
+        .actions { margin-top: 30px; display: flex; justify-content: space-between; align-items: center; }
         
         #btn-export {
             background: #1d1d1f; color: white; border: none;
-            padding: 14px 28px; border-radius: 16px;
+            padding: 12px 24px; border-radius: 14px;
             font-weight: 600; cursor: pointer; transition: all 0.2s;
         }
+        #btn-export:hover { background: #000; transform: translateY(-1px); }
 
-        #btn-export:hover { background: #000; transform: translateY(-2px); }
-
+        /* Modal */
         .modal {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
             align-items: center; justify-content: center; z-index: 1000;
         }
-
-        .modal-content { background: white; padding: 30px; border-radius: 30px; width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; max-height: 250px; overflow-y: auto; }
-        .num-btn { padding: 12px; border: 1px solid #f2f2f7; border-radius: 12px; background: #f9f9fb; cursor: pointer; font-weight: 600; }
-        .num-btn:hover { background: #007aff; color: white; }
+        .modal-content { background: white; padding: 25px; border-radius: 25px; width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center;}
+        .num-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; max-height: 220px; overflow-y: auto; padding: 5px;}
+        .num-btn { padding: 10px; border: 1px solid #e5e5ea; border-radius: 10px; background: #f9f9fb; cursor: pointer; font-weight: 600; font-size: 1rem; }
+        .num-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -127,8 +129,8 @@
     <div class="container">
         <header>
             <div>
-                <h1>Hola Germán</h1>
-                <div class="subtitle" id="week-range-text">Selecciona una fecha</div>
+                <h1>Programación de Territorios</h1>
+                <div class="subtitle" id="week-range-text">Cargando semana...</div>
             </div>
             <div class="date-picker-container" id="picker-ui">
                 <label>Lunes de la semana</label>
@@ -139,22 +141,21 @@
         <div class="week-grid" id="main-grid"></div>
 
         <div class="actions">
-            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600;">Reiniciar territorios</button>
-            <button id="btn-export">Compartir imagen</button>
+            <button onclick="clearData()" style="background:none; border:none; color:#ff3b30; cursor:pointer; font-weight:600; font-size:0.9rem;">Reiniciar territorios</button>
+            <button id="btn-export">📤 Compartir imagen</button>
         </div>
     </div>
 </div>
 
 <div id="modal" class="modal">
     <div class="modal-content">
-        <h3 style="margin-top:0">Asignar Territorio</h3>
+        <h3 style="margin-top:0; font-size:1.2rem;">Asignar Territorio</h3>
         <div class="num-grid" id="num-grid"></div>
-        <button onclick="closeModal()" style="width:100%; padding:12px; border:none; border-radius:15px; background:#f2f2f7; cursor:pointer; font-weight:600;">Cancelar</button>
+        <button onclick="closeModal()" style="width:100%; padding:10px; border:none; border-radius:12px; background:#f2f2f7; cursor:pointer; font-weight:600;">Cancelar</button>
     </div>
 </div>
 
 <script>
-    // Estructura fija de días y sus turnos
     const weekStructure = [
         { name: 'Lunes', offset: 0, shifts: 1 },
         { name: 'Martes', offset: 1, shifts: 1 },
@@ -171,6 +172,15 @@
     function init() {
         if (selectedMonday) {
             document.getElementById('monday-picker').value = selectedMonday;
+        } else {
+            // Cargar semana actual por defecto si no hay guardada
+            const today = new Date();
+            const day = today.getDay(); // 0 (Dom) - 6 (Sab)
+            const diff = today.getDate() - day + (day === 0 ? -6 : 1); // Ajuste para Lunes
+            const monday = new Date(today.setDate(diff));
+            selectedMonday = monday.toISOString().split('T')[0];
+            document.getElementById('monday-picker').value = selectedMonday;
+            localStorage.setItem('selectedMonday', selectedMonday);
         }
         render();
     }
@@ -199,22 +209,19 @@
             return;
         }
 
-        // Actualizar el título del rango
         const start = getFormattedDate(selectedMonday, 0);
         const end = getFormattedDate(selectedMonday, 6);
         const year = new Date(selectedMonday + 'T00:00:00').getFullYear();
-        rangeText.innerText = `Para la semana del ${start} al ${end} de ${year}`;
+        rangeText.innerText = `Semana del ${start} al ${end} de ${year}`;
 
         weekStructure.forEach((day, dIdx) => {
             const col = document.createElement('div');
             col.className = 'day-column';
-            
             const dayDateString = getFormattedDate(selectedMonday, day.offset);
 
             for(let s = 0; s < day.shifts; s++) {
                 const id = `slot-${dIdx}-${s}`;
                 const territories = territoryData[id] || [];
-                
                 const card = document.createElement('div');
                 card.className = 'card';
                 
@@ -269,7 +276,7 @@
     function closeModal() { document.getElementById('modal').style.display = 'none'; }
     
     function clearData() {
-        if(confirm('¿Reiniciar territorios? Las fechas se mantendrán.')) {
+        if(confirm('¿Reiniciar territories? Las fechas se mantendrán.')) {
             territoryData = {};
             saveAndRefresh();
         }
@@ -280,23 +287,24 @@
         const addBtns = document.querySelectorAll('.btn-add');
         const picker = document.getElementById('picker-ui');
         
-        // Ocultar elementos de UI
-        actions.style.opacity = '0';
-        picker.style.opacity = '0';
-        addBtns.forEach(b => b.style.opacity = '0');
+        // Esconder elementos de edición para la captura
+        actions.style.display = 'none';
+        picker.style.display = 'none';
+        addBtns.forEach(b => b.style.display = 'none');
 
         html2canvas(document.querySelector("#capture-area"), {
-            scale: 3,
+            scale: 3, // Alta calidad
             backgroundColor: "#f0f2f5"
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `Programacion_${selectedMonday}.png`;
+            link.download = `Programacion_Territorios_${selectedMonday}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             
-            actions.style.opacity = '1';
-            picker.style.opacity = '1';
-            addBtns.forEach(b => b.style.opacity = '1');
+            // Mostrar elementos de edición de nuevo
+            actions.style.display = 'flex';
+            picker.style.display = 'block';
+            addBtns.forEach(b => b.style.display = 'flex');
         });
     };
 
